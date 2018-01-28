@@ -18,29 +18,17 @@ io.on('connection', (socket) => {
     console.log('new user connected');
 
     //Emitting to everyone that joins. Calling GenerateMessage and passing it from and text strings
-    socket.emit('welcomeMessage', generateMessage('Admin', 'Welcome to the chat room!'));
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat room!'));
 
-    socket.broadcast.emit('newMessage', {
-        from: 'Admin',
-        text: 'New user joined!',
-        createdAt: new Date().getTime()
-    });
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'A new user has joined the chat room'));
+
     //listening for message from client
     socket.on('createMessage', (message) => {
-        
         /* io will emit the message to all users
         the message.from is coming from the message argument
         we pass in from above */
-        io.emit('newMessage', {
-            from: message.from,
-            text: message.text,
-            createdAt: new Date().getTime()
-        }); 
-        // socket.broadcast.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createdAt: new Date().getTime()
-        // });
+        io.emit('newMessage', generateMessage(message.from, message.text));
+
     });
     socket.on('disconnect', () => {
         console.log('user is no longer connected');
