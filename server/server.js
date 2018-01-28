@@ -17,16 +17,17 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('new user connected');
 
-    //emiting to the client
-    socket.emit('newMessage', {
-        from: 'pat',
-        text: 'hello whats going on?',
-        createdAt: 123123
-    });
-
     //listening for message from client
-    socket.on('createMessage', (newMessage) => {
-        console.log('Message received from client', newMessage);
+    socket.on('createMessage', (message) => {
+        console.log('Message received from client', message);
+        /* io will emit the message to all users
+        the message.from is coming from the message argument
+        we pass in from above */
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        }); 
     });
     socket.on('disconnect', () => {
         console.log('user is no longer connected');
