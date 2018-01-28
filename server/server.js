@@ -17,9 +17,20 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('new user connected');
 
+    //socket emit from admin text welcome to the chat app
+    socket.emit('welcomeMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat room!',
+        createdAt: new Date().getTime()
+    });
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user joined!',
+        createdAt: new Date().getTime()
+    });
     //listening for message from client
     socket.on('createMessage', (message) => {
-        console.log('Message received from client', message);
+        
         /* io will emit the message to all users
         the message.from is coming from the message argument
         we pass in from above */
@@ -28,6 +39,11 @@ io.on('connection', (socket) => {
             text: message.text,
             createdAt: new Date().getTime()
         }); 
+        // socket.broadcast.emit('newMessage', {
+        //     from: message.from,
+        //     text: message.text,
+        //     createdAt: new Date().getTime()
+        // });
     });
     socket.on('disconnect', () => {
         console.log('user is no longer connected');

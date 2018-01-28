@@ -7,7 +7,13 @@ socket.on('connect', function() {
 socket.on('disconnect', function() {
     console.log('disconnected from server!');
 });
+
+//welcome message from admin
+socket.on('welcomeMessage', function(message) {
+    console.log(message.text);
+});
 //receiving message from server
 socket.on('newMessage', function(message) {
     console.log(message);
 });
+
