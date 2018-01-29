@@ -48,13 +48,16 @@ buttonLocation.on('click', function() {
     if(!navigator.geolocation) {
         return alert('Geolocation not supported!');
     }
+    buttonLocation.attr('disabled', true).text('Sending location....');
     navigator.geolocation.getCurrentPosition(function(position) {
         socket.emit('createLocationMessage', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         });
+        buttonLocation.attr('disabled', false).text('Send location');
     //failure case
     }, function() {
+        buttonLocation.attr('disabled', false).text('Send location');
         alert('Unable to fetch location.');
     }); 
 });
