@@ -19,17 +19,42 @@ socket.on('newMessage', function(message) {
 
     jQuery('#messages').append(li.text);
 });
-
+socket.on('newLocationMessage', function(message) {
+    let listItem = jQuery('<li></li>');
+    let link = jQuery('<a target="_blank">My Current Location</a>')
+    let li = listItem;
+    let a = link;
+    li.text(`${message.from}: `);
+    a.attr('href', message.url);
+    li.append(a);
+    jQuery('#messages').append(li);
+});
 jQuery('#message-form').on('submit', function(e) {
     //so when we click send our page doesn't try to re-render
     e.preventDefault();
+    let messageTextbox = jQuery('#message');
     socket.emit('createMessage', {
         from: 'User',
-        text: jQuery('#message').val()
+        text: messageTextbox.val()
         /* the callback function below is our event acknoledgment,
         we are using it to confirm message went through */
     }, function() {
-
+        messageTextbox.val('');
     });
 });
 
+let buttonLocation = jQuery('#send-location');
+buttonLocation.on('click', function() {
+    if(!navigator.geolocation) {
+        return alert('Geolocation not supported!');
+    }
+    navigator.geolocation.getCurrentPosition(function(position) {
+        socket.emit('createLocationMessage', {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+        });
+    //failure case
+    }, function() {
+        alert('Unable to fetch location.');
+    }); 
+});
